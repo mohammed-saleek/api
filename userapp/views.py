@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 @api_view(['POST'])
+@permission_classes([])
 def registration(request):
     if request.method == 'POST':
         serializer = UserRegistrationSerializer(data = request.data)

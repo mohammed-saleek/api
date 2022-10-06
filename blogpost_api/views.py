@@ -51,7 +51,7 @@ def remove_blog(request,pk):
     except Blog.DoesNotExist:
         return Response("Cannot find a blog for this user with this ID")
 
-#To Update a blog belonging to a particular user
+# To Update a blog belonging to a particular user
 @api_view(['PATCH'])
 def update_blog(request,pk):
     try:
@@ -59,9 +59,24 @@ def update_blog(request,pk):
     except Blog.DoesNotExist:
         blog = None
         return Response("Cannot find a blog for this user with this ID")
-    serializer = BlogSerializers(data=request.data,partial=True)
+    serializer = BlogSerializers(blog,data=request.data)
+    # serializer = BlogSerializers(blog,data=request.data,partial=True)
     if serializer.is_valid():
-        serializer.save()
+        serializer.save(owner=request.user)
+        return Response(serializer.data)
+    else:
+        return Response("Invalid Data")
+    
+@api_view(['PUT'])
+def update_whole_blog(request,pk):
+    try:
+        blog = Blog.objects.get(id=pk,owner=request.user)
+    except Blog.DoesNotExist:
+        blog = None
+        return Response("Cannot find a blog for this user with this ID")
+    serializer = BlogSerializers(blog,data=request.data)
+    if serializer.is_valid():
+        serializer.save(owner=request.user)
         return Response(serializer.data)
     else:
         return Response("Invalid Data")
